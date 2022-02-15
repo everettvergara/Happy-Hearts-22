@@ -45,7 +45,8 @@ auto main(int argc, char **argv) -> int {
     Image screen("/Users/everett/Documents/Codes/Projects/HappyValentines2022/screen.img");
     Image marquee("/Users/everett/Documents/Codes/Projects/HappyValentines2022/marquee.img");
     Image heart("/Users/everett/Documents/Codes/Projects/HappyValentines2022/heart.img");
-
+    Image greetings(" ~ ~ ~ ~ ~ Happy Heart's Day 2022 ~ ~ ~ ~ ~", 2, 0xff);
+    screen.put_image(greetings, {static_cast<Dimension>(screen.dimensions().get_center_width() - greetings.dimensions().get_center_width()), 1});
     Image behind_heart1(heart.dimensions());
     Image behind_heart2(heart.dimensions());
     cache_sin_cos_table();
