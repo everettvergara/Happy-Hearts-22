@@ -22,9 +22,16 @@
 
 using namespace egv;
 
+constexpr size_t sz_screen_width = 131;
+constexpr size_t sz_screen_height = 41;
+
 auto main(int argc, char **argv) -> int {
     
+    // Image screen(sz_screen_width, sz_screen_height);
+    // Image marquee(sz_screen_width, sz_screen_height);
+    
     Image heart;
-    heart.load_image("/Users/everett/Documents/Codes/Projects/HappyValentines2022/heart.img");
+    heart.load("/Users/everett/Documents/Codes/Projects/HappyValentines2022/heart.img");
     heart.debug();
+
 }

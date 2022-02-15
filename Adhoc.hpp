@@ -23,6 +23,8 @@
 #include <fstream>
 #include <memory>
 
+
+
 namespace egv {
 
     typedef uint16_t Dimension;
@@ -33,83 +35,97 @@ namespace egv {
     typedef std::unique_ptr<Mask[]> Uptr_mask;
     typedef std::unique_ptr<Text[]> Uptr_text;
 
+
+    struct Point { uint16_t x, y; };
+    class Dimensions { 
+    public:
+        Dimensions(Dimension width, Dimension height) : width_(width), height_(height) {}
+        auto get_width() -> Dimension & { return width_; }
+        auto get_height() -> Dimension & { return height_; }
+        auto get_cwidth() const -> const Dimension { return width_; }
+        auto get_cheight() const -> const Dimension { return height_; }
+        auto set_width(Dimension width) -> void { width_ = width; set_size(); }
+        auto set_height(Dimension height) -> void { height_ = height; set_size(); }
+        auto set(Dimension width, Dimension height) -> void { width_ = width; height_ = height; set_size(); }
+        auto size() const -> const Dimension { return size_; }
+    private:
+        uint16_t width_, height_; 
+        uint16_t size_;
+        auto set_size() -> void { size_ = width_ * height_; } 
+    };
+
+    struct Rectangle {
+        Point p;
+        Dimensions d;
+    };
+
     class Image {
     public:    
-        Image() {}
-        Image(Dimension w, Dimension h) : 
-            w_(w), h_(h), s_(w_ * h_),
-            color_(std::make_unique<Color[]>(s_)),
-            text_(std::make_unique<Text[]>(s_)),
-            mask_(std::make_unique<Mask[]>(s_)) {}
+        Image() : dimensions_({0, 0}) {}
+        Image(Dimensions dimensions, Mask mask = 0x00) : 
+            dimensions_(dimensions),
+            color_(std::make_unique<Color[]>(dimensions_.size())),
+            text_(std::make_unique<Text[]>(dimensions_.size())),
+            mask_(std::make_unique<Mask[]>(dimensions_.size())) {
+                std::fill_n(mask_.get(), dimensions_.size(), mask);
+            }
         auto operator=(const Image &rhs) -> Image & = delete;
         auto operator=(Image &&rhs) -> Image &  = delete;
 
-        // Getters and Setters
-        inline auto size() const -> const Dimension { return s_; }
-        inline auto get_h() const -> const Dimension { return h_; }
-        inline auto get_w() const -> const Dimension { return w_; }
+        // Getters
+        inline auto dimensions() const -> const Dimensions & { return dimensions_; }
 
-        auto save_image(const char *filename, const Image &image) -> void {
+        auto save(const char *filename) -> void {
             std::ofstream file (filename, std::ios::binary);
             file.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-            file.write(static_cast<const char *>(static_cast<const void*>(&image)), sizeof(w_) + sizeof(h_));
-            file.write(static_cast<const char *>(static_cast<const void*>(color_.get())), size());
-            file.write(static_cast<const char *>(static_cast<const void*>(text_.get())), size());
-            file.write(static_cast<const char *>(static_cast<const void*>(mask_.get())), size());
+            file.write(static_cast<const char *>(static_cast<const void*>(&dimensions_)), sizeof(dimensions_.get_cwidth()) + sizeof(dimensions_.get_cheight()));
+            file.write(static_cast<const char *>(static_cast<const void*>(color_.get())), dimensions_.size());
+            file.write(static_cast<const char *>(static_cast<const void*>(text_.get())), dimensions_.size());
+            file.write(static_cast<const char *>(static_cast<const void*>(mask_.get())), dimensions_.size());
         }
 
-        auto load_image(const char *filename) -> void {
-            if (s_) throw;
+        auto load(const char *filename) -> void {
+            if (dimensions_.size()) throw;
             std::ifstream file (filename, std::ios::binary);
             file.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-            file.read(static_cast<char *>(static_cast<void *>(&w_)), sizeof(w_));
-            file.read(static_cast<char *>(static_cast<void *>(&h_)), sizeof(h_));
-            s_ = w_ * h_;
-            color_ = std::make_unique<Color[]>(s_);             
-            file.read(static_cast<char *>(static_cast<void *>(color_.get())), s_);
-            text_ = std::make_unique<Text[]>(s_);             
-            file.read(static_cast<char *>(static_cast<void *>(text_.get())), s_);
-            mask_ = std::make_unique<Mask[]>(s_);             
-            file.read(static_cast<char *>(static_cast<void *>(mask_.get())), s_);
+            Dimension width, height;
+            file.read(static_cast<char *>(static_cast<void *>(&width)), sizeof(dimensions_.get_cwidth()));
+            file.read(static_cast<char *>(static_cast<void *>(&height)), sizeof(dimensions_.get_cheight()));
+            
+            dimensions_.set(width, height);
+            color_ = std::make_unique<Color[]>(dimensions_.size());             
+            file.read(static_cast<char *>(static_cast<void *>(color_.get())), dimensions_.size());
+            text_ = std::make_unique<Text[]>(dimensions_.size());             
+            file.read(static_cast<char *>(static_cast<void *>(text_.get())), dimensions_.size());
+            mask_ = std::make_unique<Mask[]>(dimensions_.size());             
+            file.read(static_cast<char *>(static_cast<void *>(mask_.get())), dimensions_.size());
         }
 
         auto debug() -> void {
             std::cout << "\nmask:\n";
-            for (int i = 0; i < h_; ++i) {
-                for (int j = 0; j < w_; ++j) {
-                    std::cout << (mask_[i * w_ + j] == 0x00 ? '0' : '1');
-                }
+            for (int i = 0; i < dimensions_.get_cheight(); ++i) {
+                for (int j = 0; j < dimensions_.get_cwidth(); ++j)
+                    std::cout << (mask_[i * dimensions_.get_cwidth() + j] == 0x00 ? '0' : '1');
                 std::cout << "\n";
             }
             std::cout << "\n\n";
 
             std::cout << "\ntext:\n";
-            for (int i = 0; i < h_; ++i) {
-                for (int j = 0; j < w_; ++j) {
-                    std::cout << text_[i* w_ + j];
-                }
+            for (int i = 0; i < dimensions_.get_cheight(); ++i) {
+                for (int j = 0; j < dimensions_.get_cwidth(); ++j)
+                    std::cout << text_[i * dimensions_.get_cwidth() + j];
                 std::cout << "\n";
             }
             std::cout << "\n\n";    
         }
 
     private:
-        Dimension w_{0}, h_{0}, s_{0};
+        Dimensions dimensions_;
         Uptr_color color_ {nullptr};
         Uptr_text text_ {nullptr};
         Uptr_mask mask_ {nullptr};
     };
 
-
-    struct Coordinate {
-        Dimension x, y;
-    };
-
-    struct Rectangle {
-        Coordinate coordinate;
-        Dimension w, h;
-        inline auto size() const -> const Dimension {return w * h;}
-    };
 
 }
 
