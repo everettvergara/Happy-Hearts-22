@@ -47,11 +47,13 @@ auto main(int argc, char **argv) -> int {
     Image screen("/Users/everett/Documents/Codes/Projects/HappyValentines2022/screen.img");
     Image marquee("/Users/everett/Documents/Codes/Projects/HappyValentines2022/marquee.img");
     Image heart("/Users/everett/Documents/Codes/Projects/HappyValentines2022/heart.img");
-    Image greetings(" ~ ~ ~ ~ ~ Happy Heart's Day 2022 ~ ~ ~ ~ ~", 2, 0xff);
+    Image greetings(" ~ ~ ~ ~ ~ Happy Heart's Day 2022 ~ ~ ~ ~ ~", 6, 0xff);
+    Image download_at("https://github.com/everettvergara/HappyValentines2022", 5, 0xff);
     Image wave({screen.dimensions().get_cwidth(), SZ_WAVE_COLORS}, 0xff);
     Uptr_color wave_averages = std::make_unique<Color[]>(wave.dimensions().size());
     
     screen.put_image(greetings, {static_cast<Dimension>(screen.dimensions().get_center_width() - greetings.dimensions().get_center_width()), 0});
+    screen.put_image(download_at, {static_cast<Dimension>(screen.dimensions().get_center_width() - greetings.dimensions().get_center_width()), 0});
     Image behind_heart1(heart.dimensions());
     Image behind_heart2(heart.dimensions());
     
@@ -63,6 +65,8 @@ auto main(int argc, char **argv) -> int {
         // Start timing ms per frame
         TimePointSysClock start {SysClock::now()};
         
+        // Start of Rain Animation
+
         // Start of Wave Animation
         // .....
 
