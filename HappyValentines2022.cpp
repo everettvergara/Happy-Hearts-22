@@ -45,8 +45,7 @@ auto main(int argc, char **argv) -> int {
     Image screen("/Users/everett/Documents/Codes/Projects/HappyValentines2022/screen.img");
     Image marquee("/Users/everett/Documents/Codes/Projects/HappyValentines2022/marquee.img");
     Image heart("/Users/everett/Documents/Codes/Projects/HappyValentines2022/heart.img");
-    Image ruler("123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 ", 1, 0xff);
-    // screen.put_image(ruler, {0, 1});
+
     Image behind_heart1(heart.dimensions());
     Image behind_heart2(heart.dimensions());
     cache_sin_cos_table();
@@ -66,7 +65,7 @@ auto main(int argc, char **argv) -> int {
         behind_heart2.get_image(screen, point_heart2);
         screen.and_mask(heart, point_heart1);
         screen.and_mask(heart, point_heart2);
-        // marquee.rotate_left();
+        marquee.rotate_left();
         screen.or_image(marquee, {0, 0});
 
         // Show Hearts, Wave and Greetings
@@ -75,8 +74,9 @@ auto main(int argc, char **argv) -> int {
         // Delay until mspf is reached
         delay_until_mspf(start);
 
-        screen.put_image(behind_heart1, point_heart1);
+        // Restore screen to original state
         screen.put_image(behind_heart2, point_heart2);
+        screen.put_image(behind_heart1, point_heart1);
 
     } while(!is_key_pressed());
 }

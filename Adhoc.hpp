@@ -152,14 +152,14 @@ namespace egv {
         }
 
         auto get_image(const Image &source, const Point point) -> void {
-            int start = point.y * dimensions_.get_cwidth() + point.x;
-            int add_vertical = dimensions_.get_cwidth() - source.dimensions_.get_cwidth();
+            int start = point.y * source.dimensions_.get_cwidth() + point.x;
+            int add_vertical = source.dimensions_.get_cwidth() - dimensions_.get_cwidth();
             for (int i = 0; i < dimensions_.size();) {
                 int ci = start + i;
                 color_[i] = source.color_[ci];
                 text_[i] = source.text_[ci];
                 mask_[i] = source.mask_[ci];
-                if (++i % source.dimensions_.get_cwidth() == 0) start += add_vertical;
+                if (++i % dimensions_.get_cwidth() == 0) start += add_vertical;
             }
         }
     
