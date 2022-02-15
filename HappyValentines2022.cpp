@@ -50,15 +50,15 @@ auto main(int argc, char **argv) -> int {
     Image behind_heart2(heart.dimensions());
     cache_sin_cos_table();
 
-    SmootherSinCosTable i(5, 30);
+    SmootherSinCosTable i(5, 30), j (1, 50);
     do {
         // Start timing ms per frame
         TimePointSysClock start {SysClock::now()};
 
         // Rotate with smoothing function
-        i.next();
-        Point point_heart1 = set_center_pos(screen, heart, i.get(), 1, -1);
-        Point point_heart2 = set_center_pos(screen, heart, i.get(), -1, 1);
+        i.next(); j.next();
+        Point point_heart1 = set_center_pos(screen, heart, i.get(), -1, -1);
+        Point point_heart2 = set_center_pos(screen, heart, j.get(), 1, 1);
 
         // Process hearts 
         behind_heart1.get_image(screen, point_heart1);
