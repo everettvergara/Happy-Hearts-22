@@ -18,7 +18,13 @@
  */
 
 #include <iostream>
+#include "Adhoc.hpp"
+
+using namespace egv;
 
 auto main(int argc, char **argv) -> int {
     
+    Image heart;
+    heart.load_image("/Users/everett/Documents/Codes/Projects/HappyValentines2022/heart.img");
+    heart.debug();
 }
