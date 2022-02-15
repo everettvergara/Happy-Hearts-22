@@ -33,15 +33,19 @@ namespace egv {
     typedef std::unique_ptr<Mask[]> Uptr_mask;
     typedef std::unique_ptr<Text[]> Uptr_text;
 
-    constexpr int DEG_GRANULARITY = 360;
-    float sine[DEG_GRANULARITY], cosine[DEG_GRANULARITY];
+    constexpr int SZ_WAVE_COLORS = 15; 
+    Color WAVE_PALETTE[SZ_WAVE_COLORS] {0, 0, 0, 0, 0, 0, 4, 4, 4, 5, 5, 6, 6, 6, 6};
+    Text WAVE_TEXT[SZ_WAVE_COLORS] {' ', ' ', ' ', ' ', ' ', ' ', '.', '.', '^', '^', '*', '*', '*', '*', '*'};
+
+    constexpr int SZ_DEG_GRANULARITY = 360;
+    float sine[SZ_DEG_GRANULARITY], cosine[SZ_DEG_GRANULARITY];
 
     class SmootherSinCosTable {
     public:
         SmootherSinCosTable(uint16_t min, uint16_t max) : min_(min), max_(max), cur_(min), inc_(1) {};
         auto get() const -> const uint16_t { return ix_; }
         auto next() -> uint16_t {
-            ix_ = (ix_ + cur_) % DEG_GRANULARITY;
+            ix_ = (ix_ + cur_) % SZ_DEG_GRANULARITY;
             cur_ += inc_;
             if (cur_ == min_ || cur_ == max_) inc_ *= -1; 
             return ix_;
@@ -98,6 +102,10 @@ namespace egv {
         Image(const char *filename) : Image() { load(filename); }
         auto operator=(const Image &rhs) -> Image & = delete;
         auto operator=(Image &&rhs) -> Image &  = delete;
+
+        auto get_raw_color() -> Uptr_color & { return color_; }
+        auto get_raw_text() -> Uptr_text & { return text_; }
+        auto get_raw_mask() -> Uptr_mask & { return mask_; }
 
         inline auto dimensions() const -> const Dimensions & { return dimensions_; }
 
