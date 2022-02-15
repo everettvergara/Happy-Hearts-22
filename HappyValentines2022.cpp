@@ -67,6 +67,7 @@ auto main(int argc, char **argv) -> int {
         // .....
 
         set_starting_wave(wave, wave_averages);
+        animate_wave(wave, wave_averages);
 
         screen.put_image(wave, {0, static_cast<Dimension>(screen.dimensions().get_cheight() - wave.dimensions().get_cheight() - 1)});
         

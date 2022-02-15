@@ -34,8 +34,8 @@ namespace egv {
     typedef std::unique_ptr<Text[]> Uptr_text;
 
     constexpr int SZ_WAVE_COLORS = 15; 
-    Color WAVE_PALETTE[SZ_WAVE_COLORS] {0, 0, 0, 0, 0, 0, 4, 4, 4, 5, 5, 6, 6, 6, 6};
-    Text WAVE_TEXT[SZ_WAVE_COLORS] {' ', ' ', ' ', ' ', ' ', ' ', '.', '.', '^', '^', '*', '*', '*', '*', '*'};
+    Color WAVE_PALETTE[SZ_WAVE_COLORS] {0, 0, 0, 0, 0, 4, 4, 4, 5, 5, 6, 6, 6, 6, 6};
+    Text WAVE_TEXT[SZ_WAVE_COLORS] {' ', ' ', ' ', ' ', ' ', '.', '.', '^', '^', '*', '#', '#', '#', '#', '#'};
 
     constexpr int SZ_DEG_GRANULARITY = 360;
     float sine[SZ_DEG_GRANULARITY], cosine[SZ_DEG_GRANULARITY];
