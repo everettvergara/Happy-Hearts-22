@@ -33,6 +33,24 @@ namespace egv {
     typedef std::unique_ptr<Mask[]> Uptr_mask;
     typedef std::unique_ptr<Text[]> Uptr_text;
 
+    constexpr int DEG_GRANULARITY = 360;
+    float sine[DEG_GRANULARITY], cosine[DEG_GRANULARITY];
+
+    class SmootherSinCosTable {
+    public:
+        SmootherSinCosTable(uint16_t min, uint16_t max) : min_(min), max_(max), cur_(min), inc_(1) {};
+        auto get() const -> const uint16_t { return ix_; }
+        auto next() -> uint16_t {
+            ix_ = (ix_ + cur_) % DEG_GRANULARITY;
+            cur_ += inc_;
+            if (cur_ == min_ || cur_ == max_) inc_ *= -1; 
+            return ix_;
+        }
+    private:
+        uint16_t min_, max_, cur_, inc_;
+        uint16_t ix_{0};
+    };
+
     struct Point { uint16_t x, y; };
     class Dimensions { 
     public:
@@ -46,7 +64,7 @@ namespace egv {
         auto set(Dimension width, Dimension height) -> void { width_ = width; height_ = height; set_size(); }
         auto size() const -> const Dimension { return size_; }
         auto get_center_width() const -> const Dimension { return width_ / 2; };
-        auto get_center_height() const -> const Dimension { return width_ / 2; };
+        auto get_center_height() const -> const Dimension { return height_ / 2; };
 
     private:
         uint16_t width_, height_; 
@@ -135,7 +153,7 @@ namespace egv {
 
         auto get_image(const Image &source, const Point point) -> void {
             int start = point.y * dimensions_.get_cwidth() + point.x;
-            int add_vertical = source.dimensions_.get_cwidth() - dimensions_.get_cwidth();
+            int add_vertical = dimensions_.get_cwidth() - source.dimensions_.get_cwidth();
             for (int i = 0; i < dimensions_.size();) {
                 int ci = start + i;
                 color_[i] = source.color_[ci];
@@ -147,7 +165,7 @@ namespace egv {
     
         auto and_mask(const Image &source, const Point point) -> void {
             int start = point.y * dimensions_.get_cwidth() + point.x;
-            int add_vertical = source.dimensions_.get_cwidth() - dimensions_.get_cwidth();
+            int add_vertical = dimensions_.get_cwidth() - source.dimensions_.get_cwidth();
             for (int i = 0; i < source.dimensions_.size();) {
                 mask_[start + i] &= source.mask_[i]; 
                 if (++i % source.dimensions_.get_cwidth() == 0) start += add_vertical;
@@ -156,7 +174,7 @@ namespace egv {
 
         auto or_image(const Image &source, const Point point) -> void {
             int start = point.y * dimensions_.get_cwidth() + point.x;
-            int add_vertical = source.dimensions_.get_cwidth() - dimensions_.get_cwidth();
+            int add_vertical = dimensions_.get_cwidth() - source.dimensions_.get_cwidth();
             for (int i = 0; i < source.dimensions_.size();) {
                 int ci = start + i;
                 mask_[ci] |= source.mask_[i]; 
@@ -197,7 +215,7 @@ namespace egv {
 
         auto put_image(const Image &source, const Point point) -> void {
             int start = point.y * dimensions_.get_cwidth() + point.x;
-            int add_vertical = source.dimensions_.get_cwidth() - dimensions_.get_cwidth();
+            int add_vertical = dimensions_.get_cwidth() - source.dimensions_.get_cwidth();
             for (int i = 0; i < source.dimensions_.size();) {
                 int ci = start + i;
                 color_[ci] = source.color_[i]; 
