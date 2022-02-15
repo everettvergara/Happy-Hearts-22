@@ -35,6 +35,7 @@ constexpr int FPS = 15;
 constexpr int MSPF = 1000 / FPS;
 constexpr float HEART_RADIUS = 10.0f; 
 
+auto set_droplet_image() -> void;
 auto set_starting_wave(Image &wave, Uptr_color &wave_averages) -> void;
 auto animate_wave(Image &wave, Uptr_color &wave_averages) -> void;
 auto cache_sin_cos_table() -> void;
@@ -43,17 +44,28 @@ auto reset_wave_colors(Uptr_color &wave_averages, size_t sz_wave) -> void;
 auto delay_until_mspf(const TimePointSysClock &start) -> void;
 
 auto main(int argc, char **argv) -> int {
+
+    /*  
+         . . .
+     *   S s s
+     *   S o S
+     *   O   o
+     *	
+     *	
+     */
+    
     
     Image screen("/Users/everett/Documents/Codes/Projects/HappyValentines2022/screen.img");
     Image marquee("/Users/everett/Documents/Codes/Projects/HappyValentines2022/marquee.img");
     Image heart("/Users/everett/Documents/Codes/Projects/HappyValentines2022/heart.img");
-    Image greetings(" ~ ~ ~ ~ ~ Happy Heart's Day 2022 ~ ~ ~ ~ ~", 6, 0xff);
-    Image download_at("https://github.com/everettvergara/HappyValentines2022", 5, 0xff);
+    Image greetings(" ~ ~ ~ ~ ~ Happy Heart's Day 2022 ~ ~ ~ ~ ~", 2, 0xff);
+    Image download_at("https://github.com/everettvergara/HappyValentines2022", 3, 0xff);
+    Image droplets[3]{Image({1, 5}), Image({1, 5}), Image({1, 5})};
     Image wave({screen.dimensions().get_cwidth(), SZ_WAVE_COLORS}, 0xff);
     Uptr_color wave_averages = std::make_unique<Color[]>(wave.dimensions().size());
     
     screen.put_image(greetings, {static_cast<Dimension>(screen.dimensions().get_center_width() - greetings.dimensions().get_center_width()), 0});
-    screen.put_image(download_at, {static_cast<Dimension>(screen.dimensions().get_center_width() - greetings.dimensions().get_center_width()), 0});
+    screen.put_image(download_at, {static_cast<Dimension>(screen.dimensions().get_center_width() - download_at.dimensions().get_center_width()), 1});
     Image behind_heart1(heart.dimensions());
     Image behind_heart2(heart.dimensions());
     
