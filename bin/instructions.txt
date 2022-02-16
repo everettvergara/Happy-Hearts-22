@@ -1,0 +1,5 @@
+Run cmake with same level as this file.
+$cmake ../
+
+Run make afterwards with VERBOSE=1 to check for warnings and errors
+make VERBOSE=1
