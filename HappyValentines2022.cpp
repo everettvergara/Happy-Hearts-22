@@ -55,8 +55,8 @@ auto main(int argc, char **argv) -> int {
     Image greetings(" ~ ~ ~ ~ ~ Happy Heart's Day 2022 ~ ~ ~ ~ ~", 2, 0xff);
     Image download_at("https://github.com/everettvergara/HappyValentines2022", 3, 0xff);
     
-    Image wave({screen.dimensions().get_cwidth(), SZ_WAVE_COLORS}, 0xff);
-    Uptr_color wave_averages = std::make_unique<Color[]>(wave.dimensions().size());
+    Image wave({screen.area().width(), SZ_WAVE_COLORS}, 0xff);
+    Uptr_color wave_averages = std::make_unique<Color[]>(wave.area().size());
     
     // Image droplet_eraser({1, 5}, 0xff);
     DropletAnimation droplet_animation {
@@ -65,13 +65,13 @@ auto main(int argc, char **argv) -> int {
         Image({1, 5}, 0xff)};
     Droplets droplets;
     
-    screen.put_image(greetings, {static_cast<Dimension>(screen.dimensions().get_center_width() - greetings.dimensions().get_center_width()), 0});
-    screen.put_image(download_at, {static_cast<Dimension>(screen.dimensions().get_center_width() - download_at.dimensions().get_center_width()), 1});
-    Image behind_heart1(heart.dimensions());
-    Image behind_heart2(heart.dimensions());
+    screen.put_image(greetings, {static_cast<Dimension>(screen.area().width_center() - greetings.area().width_center()), 0});
+    screen.put_image(download_at, {static_cast<Dimension>(screen.area().width_center() - download_at.area().width_center()), 1});
+    Image behind_heart1(heart.area());
+    Image behind_heart2(heart.area());
     
     cache_sin_cos_table();
-    reset_wave_colors(wave_averages, wave.dimensions().size());
+    reset_wave_colors(wave_averages, wave.area().size());
     set_droplet_animation_images(screen, droplet_animation, droplets);
 
     SmootherSinCosTable i(5, 30), j (1, 50);
@@ -89,7 +89,7 @@ auto main(int argc, char **argv) -> int {
         set_starting_wave(wave, wave_averages);
         animate_wave(wave, wave_averages);
 
-        screen.put_image(wave, {0, static_cast<Dimension>(screen.dimensions().get_cheight() - wave.dimensions().get_cheight() - 1)});
+        screen.put_image(wave, {0, static_cast<Dimension>(screen.area().height() - wave.area().height() - 1)});
         
 
         // Start of Hearts Animation
@@ -146,8 +146,8 @@ auto set_droplet_animation_images(const Image &screen, DropletAnimation &droplet
             droplet_image.get_raw_color()[i] = 4;
 
     for (auto &droplet : droplets) {
-        droplet.point.x = rand() % screen.dimensions().get_cwidth();
-        droplet.point.y = 2 + rand() % (screen.dimensions().get_cheight() - 10);
+        droplet.point.x = rand() % screen.area().width();
+        droplet.point.y = 2 + rand() % (screen.area().height() - 10);
         droplet.animation_ix = rand() % 3;
         droplet.stepper_max = 1 + rand() % 10;
     }
@@ -165,8 +165,8 @@ auto animate_droplets(Image &screen, const DropletAnimation &droplet_animation, 
             ++droplet.point.y;
         }
 
-        if (droplet.point.y > (screen.dimensions().get_cheight() - 10)) {
-            droplet.point.x = rand() % screen.dimensions().get_cwidth();
+        if (droplet.point.y > (screen.area().height() - 10)) {
+            droplet.point.x = rand() % screen.area().width();
             droplet.point.y = 2;
             droplet.stepper_max = 1 + rand() % 5;
         }
@@ -187,8 +187,8 @@ auto cache_sin_cos_table() -> void {
 
 auto set_center_pos(const Image &screen, const Image &source, int cos_sin_ix, int x_dir, int y_dir) -> Point {
     Point point {
-        static_cast<uint16_t>(screen.dimensions().get_center_width() - source.dimensions().get_center_width() + HEART_RADIUS * cosine[cos_sin_ix] * x_dir), 
-        static_cast<uint16_t>(screen.dimensions().get_center_height() - source.dimensions().get_center_height()  + HEART_RADIUS * sine[cos_sin_ix] * y_dir)
+        static_cast<uint16_t>(screen.area().width_center() - source.area().width_center() + HEART_RADIUS * cosine[cos_sin_ix] * x_dir), 
+        static_cast<uint16_t>(screen.area().height_center() - source.area().height_center()  + HEART_RADIUS * sine[cos_sin_ix] * y_dir)
     };
     return point;
 }
@@ -206,8 +206,8 @@ auto reset_wave_colors(Uptr_color &wave_averages, size_t sz_wave) -> void {
 }
 
 auto set_starting_wave(Image &wave, Uptr_color &wave_averages) -> void {
-    Dimension start = wave.dimensions().get_cwidth() * (wave.dimensions().get_cheight() - 1);
-    Dimension end = start + wave.dimensions().get_cwidth();
+    Dimension start = wave.area().width() * (wave.area().height() - 1);
+    Dimension end = start + wave.area().width();
     Uptr_text &wave_text = wave.get_raw_text();
     Uptr_text &wave_color = wave.get_raw_color();
     for (int i = start; i < end; ++i) {
@@ -221,8 +221,8 @@ auto set_starting_wave(Image &wave, Uptr_color &wave_averages) -> void {
 auto animate_wave(Image &wave, Uptr_color &wave_averages) -> void {
     Uptr_text &wave_text = wave.get_raw_text();
     Uptr_text &wave_color = wave.get_raw_color();
-    Dimension sz_wave = wave.dimensions().size();
-    Dimension wave_width = wave.dimensions().get_cwidth();
+    Dimension sz_wave = wave.area().size();
+    Dimension wave_width = wave.area().width();
     for (Dimension i = 0; i < sz_wave - wave_width; ++i) {
         int down = i + wave_width;
         int j = (wave_averages[down % sz_wave] + 
