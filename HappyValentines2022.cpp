@@ -23,7 +23,11 @@
 #include <thread>
 #include <cmath>
 
-#include "Adhoc.hpp"
+#include "Dimensions.hpp"
+#include "Image.h"
+#include "Wave.hpp"
+#include "Hearts.hpp"
+#include "Droplet.hpp"
 #include "Misc.hpp"
 
 using namespace g80;
@@ -32,7 +36,7 @@ namespace chr = std::chrono;
 typedef chr::time_point<chr::system_clock> TimePointSysClock;
 typedef chr::system_clock SysClock;
 typedef std::array<Image, 3> DropletAnimation;
-typedef std::array<Droplet, 50> Droplets;
+typedef std::array<Droplet, 100> Droplets;
 
 constexpr int FPS = 15;
 constexpr int MSPF = 1000 / FPS;
@@ -49,16 +53,15 @@ auto delay_until_mspf(const TimePointSysClock &start) -> void;
 
 auto main(int argc, char **argv) -> int {
     
-    Image screen("/Users/everett/Documents/Codes/Projects/HappyValentines2022/screen.img");
-    Image marquee("/Users/everett/Documents/Codes/Projects/HappyValentines2022/marquee.img");
-    Image heart("/Users/everett/Documents/Codes/Projects/HappyValentines2022/heart.img");
+    Image screen("./asset/screen.img");
+    Image marquee("./asset/marquee.img");
+    Image heart("./asset/heart.img");
     Image greetings(" ~ ~ ~ ~ ~ Happy Heart's Day 2022 ~ ~ ~ ~ ~", 2, 0xff);
     Image download_at("https://github.com/everettvergara/HappyValentines2022", 3, 0xff);
     
     Image wave({screen.area().w(), SZ_WAVE_COLORS}, 0xff);
     Uptr_color wave_averages = std::make_unique<Color[]>(wave.area().size());
     
-    // Image droplet_eraser({1, 5}, 0xff);
     DropletAnimation droplet_animation {
         Image({1, 5}, 0xff), 
         Image({1, 5}, 0xff), 
@@ -80,21 +83,15 @@ auto main(int argc, char **argv) -> int {
         TimePointSysClock start {SysClock::now()};
         
         // Start of Droplet Animation
-        // .....
         animate_droplets(screen, droplet_animation, droplets);
 
         // Start of Wave Animation
-        // .....
-
         set_starting_wave(wave, wave_averages);
         animate_wave(wave, wave_averages);
-
         screen.put_image(wave, {0, static_cast<Dimension>(screen.area().h() - wave.area().h() - 1)});
         
 
         // Start of Hearts Animation
-        // .....
-        
         // Rotate with smoothing function
         i.next(); j.next();
         Point point_heart1 = set_center_pos(screen, heart, i.get(), -1, -1);
@@ -124,22 +121,22 @@ auto main(int argc, char **argv) -> int {
 auto set_droplet_animation_images(const Image &screen, DropletAnimation &droplet_animation, Droplets &droplets) -> void {
     
     droplet_animation[0].raw_text()[0] = ' ';
-    droplet_animation[0].raw_text()[1] = '.';
+    droplet_animation[0].raw_text()[1] = ' ';
     droplet_animation[0].raw_text()[2] = '.';
     droplet_animation[0].raw_text()[3] = '.';
     droplet_animation[0].raw_text()[4] = '@';
 
     droplet_animation[1].raw_text()[0] = ' ';
-    droplet_animation[1].raw_text()[1] = '.';
+    droplet_animation[1].raw_text()[1] = ' ';
     droplet_animation[1].raw_text()[2] = '.';
-    droplet_animation[1].raw_text()[3] = '@';
-    droplet_animation[1].raw_text()[4] = ' ';
+    droplet_animation[1].raw_text()[3] = '.';
+    droplet_animation[1].raw_text()[4] = '@';
 
     droplet_animation[2].raw_text()[0] = ' ';
-    droplet_animation[2].raw_text()[1] = '.';
-    droplet_animation[2].raw_text()[2] = '@';
-    droplet_animation[2].raw_text()[3] = ' ';
-    droplet_animation[2].raw_text()[4] = ' ';     
+    droplet_animation[2].raw_text()[1] = ' ';
+    droplet_animation[2].raw_text()[2] = ' ';
+    droplet_animation[2].raw_text()[3] = '.';
+    droplet_animation[2].raw_text()[4] = '@';     
 
     for (auto &droplet_image : droplet_animation)
         for (int i = 0; i < 5; ++i)
@@ -149,7 +146,7 @@ auto set_droplet_animation_images(const Image &screen, DropletAnimation &droplet
         droplet.point.x = rand() % screen.area().w();
         droplet.point.y = 2 + rand() % (screen.area().h() - 10);
         droplet.animation_ix = rand() % 3;
-        droplet.stepper_max = 1 + rand() % 10;
+        droplet.stepper_max = 1 + rand() % 3;
     }
 }
 
@@ -168,9 +165,8 @@ auto animate_droplets(Image &screen, const DropletAnimation &droplet_animation, 
         if (droplet.point.y > (screen.area().h() - 10)) {
             droplet.point.x = rand() % screen.area().w();
             droplet.point.y = 2;
-            droplet.stepper_max = 1 + rand() % 5;
+            droplet.stepper_max = 1 + rand() % 3;
         }
-        std::cout << "i. " << i << " x: " << droplet.point.x << " y: " << droplet.point.y << "\n";
         screen.put_image(droplet_animation[droplet.animation_ix], droplet.point);
         ++i;
     }

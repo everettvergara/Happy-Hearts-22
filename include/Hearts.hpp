@@ -1,5 +1,5 @@
 /*
- *  Misc. functions and classes for Text Art - Valentines 2022 
+ *  Heart auxilliary classes for Text Art - Valentines 2022 
  *  Copyright (C) 2022 Everett Gaius S. Vergara
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,47 +17,37 @@
  *	
  */
 
-#ifndef _ADHOC_VAL22_
-#define _ADHOC_VAL22_
+#ifndef _HEARTS_HPP_
+#define _HEARTS_HPP_
 
-#include <iostream>
-#include <fstream>
-#include <memory>
-#include <array>
-
-#include "Dimensions.hpp"
-#include "Image.h"
+#include <cstdint>
 
 namespace g80 {
-    constexpr int SZ_WAVE_COLORS = 15; 
-    Color WAVE_PALETTE[SZ_WAVE_COLORS] {0, 0, 0, 0, 0, 4, 4, 4, 5, 5, 6, 6, 6, 6, 6};
-    Text WAVE_TEXT[SZ_WAVE_COLORS] {' ', ' ', ' ', ' ', ' ', '.', '.', '^', '^', '*', '#', '#', '#', '#', '#'};
 
     constexpr int SZ_DEG_GRANULARITY = 360;
     float sine[SZ_DEG_GRANULARITY], cosine[SZ_DEG_GRANULARITY];
 
     class SmootherSinCosTable {
     public:
-        SmootherSinCosTable(uint16_t min, uint16_t max) : min_(min), max_(max), cur_(min), inc_(1) {};
-        auto get() const -> const uint16_t { return ix_; }
+        SmootherSinCosTable(uint16_t min, uint16_t max) : 
+            min_(min), max_(max), cur_(min) {
+        };
+
+        auto get() const -> const uint16_t { 
+            return ix_; 
+        }
+
         auto next() -> uint16_t {
             ix_ = (ix_ + cur_) % SZ_DEG_GRANULARITY;
             cur_ += inc_;
             if (cur_ == min_ || cur_ == max_) inc_ *= -1; 
             return ix_;
         }
+        
     private:
-        uint16_t min_, max_, cur_, inc_;
+        uint16_t min_, max_, cur_, inc_{1};
         uint16_t ix_{0};
-    };
-
-    struct Droplet {
-        Point point{0, 0};
-        int animation_ix{0};
-        int ixn{1};
-        int stepper{0};
-        int stepper_max{3};
     };
 }
 
-#endif 
+#endif
