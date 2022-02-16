@@ -26,7 +26,7 @@
 #include "Adhoc.hpp"
 #include "Misc.hpp"
 
-using namespace egv;
+using namespace g80;
 
 namespace chr = std::chrono;
 typedef chr::time_point<chr::system_clock> TimePointSysClock;
@@ -55,7 +55,7 @@ auto main(int argc, char **argv) -> int {
     Image greetings(" ~ ~ ~ ~ ~ Happy Heart's Day 2022 ~ ~ ~ ~ ~", 2, 0xff);
     Image download_at("https://github.com/everettvergara/HappyValentines2022", 3, 0xff);
     
-    Image wave({screen.area().width(), SZ_WAVE_COLORS}, 0xff);
+    Image wave({screen.area().w(), SZ_WAVE_COLORS}, 0xff);
     Uptr_color wave_averages = std::make_unique<Color[]>(wave.area().size());
     
     // Image droplet_eraser({1, 5}, 0xff);
@@ -65,8 +65,8 @@ auto main(int argc, char **argv) -> int {
         Image({1, 5}, 0xff)};
     Droplets droplets;
     
-    screen.put_image(greetings, {static_cast<Dimension>(screen.area().width_center() - greetings.area().width_center()), 0});
-    screen.put_image(download_at, {static_cast<Dimension>(screen.area().width_center() - download_at.area().width_center()), 1});
+    screen.put_image(greetings, {static_cast<Dimension>(screen.area().w_mid() - greetings.area().w_mid()), 0});
+    screen.put_image(download_at, {static_cast<Dimension>(screen.area().w_mid() - download_at.area().w_mid()), 1});
     Image behind_heart1(heart.area());
     Image behind_heart2(heart.area());
     
@@ -89,7 +89,7 @@ auto main(int argc, char **argv) -> int {
         set_starting_wave(wave, wave_averages);
         animate_wave(wave, wave_averages);
 
-        screen.put_image(wave, {0, static_cast<Dimension>(screen.area().height() - wave.area().height() - 1)});
+        screen.put_image(wave, {0, static_cast<Dimension>(screen.area().h() - wave.area().h() - 1)});
         
 
         // Start of Hearts Animation
@@ -123,31 +123,31 @@ auto main(int argc, char **argv) -> int {
 
 auto set_droplet_animation_images(const Image &screen, DropletAnimation &droplet_animation, Droplets &droplets) -> void {
     
-    droplet_animation[0].get_raw_text()[0] = ' ';
-    droplet_animation[0].get_raw_text()[1] = '.';
-    droplet_animation[0].get_raw_text()[2] = '.';
-    droplet_animation[0].get_raw_text()[3] = '.';
-    droplet_animation[0].get_raw_text()[4] = '@';
+    droplet_animation[0].raw_text()[0] = ' ';
+    droplet_animation[0].raw_text()[1] = '.';
+    droplet_animation[0].raw_text()[2] = '.';
+    droplet_animation[0].raw_text()[3] = '.';
+    droplet_animation[0].raw_text()[4] = '@';
 
-    droplet_animation[1].get_raw_text()[0] = ' ';
-    droplet_animation[1].get_raw_text()[1] = '.';
-    droplet_animation[1].get_raw_text()[2] = '.';
-    droplet_animation[1].get_raw_text()[3] = '@';
-    droplet_animation[1].get_raw_text()[4] = ' ';
+    droplet_animation[1].raw_text()[0] = ' ';
+    droplet_animation[1].raw_text()[1] = '.';
+    droplet_animation[1].raw_text()[2] = '.';
+    droplet_animation[1].raw_text()[3] = '@';
+    droplet_animation[1].raw_text()[4] = ' ';
 
-    droplet_animation[2].get_raw_text()[0] = ' ';
-    droplet_animation[2].get_raw_text()[1] = '.';
-    droplet_animation[2].get_raw_text()[2] = '@';
-    droplet_animation[2].get_raw_text()[3] = ' ';
-    droplet_animation[2].get_raw_text()[4] = ' ';     
+    droplet_animation[2].raw_text()[0] = ' ';
+    droplet_animation[2].raw_text()[1] = '.';
+    droplet_animation[2].raw_text()[2] = '@';
+    droplet_animation[2].raw_text()[3] = ' ';
+    droplet_animation[2].raw_text()[4] = ' ';     
 
     for (auto &droplet_image : droplet_animation)
         for (int i = 0; i < 5; ++i)
-            droplet_image.get_raw_color()[i] = 4;
+            droplet_image.raw_color()[i] = 4;
 
     for (auto &droplet : droplets) {
-        droplet.point.x = rand() % screen.area().width();
-        droplet.point.y = 2 + rand() % (screen.area().height() - 10);
+        droplet.point.x = rand() % screen.area().w();
+        droplet.point.y = 2 + rand() % (screen.area().h() - 10);
         droplet.animation_ix = rand() % 3;
         droplet.stepper_max = 1 + rand() % 10;
     }
@@ -165,8 +165,8 @@ auto animate_droplets(Image &screen, const DropletAnimation &droplet_animation, 
             ++droplet.point.y;
         }
 
-        if (droplet.point.y > (screen.area().height() - 10)) {
-            droplet.point.x = rand() % screen.area().width();
+        if (droplet.point.y > (screen.area().h() - 10)) {
+            droplet.point.x = rand() % screen.area().w();
             droplet.point.y = 2;
             droplet.stepper_max = 1 + rand() % 5;
         }
@@ -187,8 +187,8 @@ auto cache_sin_cos_table() -> void {
 
 auto set_center_pos(const Image &screen, const Image &source, int cos_sin_ix, int x_dir, int y_dir) -> Point {
     Point point {
-        static_cast<uint16_t>(screen.area().width_center() - source.area().width_center() + HEART_RADIUS * cosine[cos_sin_ix] * x_dir), 
-        static_cast<uint16_t>(screen.area().height_center() - source.area().height_center()  + HEART_RADIUS * sine[cos_sin_ix] * y_dir)
+        static_cast<uint16_t>(screen.area().w_mid() - source.area().w_mid() + HEART_RADIUS * cosine[cos_sin_ix] * x_dir), 
+        static_cast<uint16_t>(screen.area().h_mid() - source.area().h_mid()  + HEART_RADIUS * sine[cos_sin_ix] * y_dir)
     };
     return point;
 }
@@ -206,10 +206,10 @@ auto reset_wave_colors(Uptr_color &wave_averages, size_t sz_wave) -> void {
 }
 
 auto set_starting_wave(Image &wave, Uptr_color &wave_averages) -> void {
-    Dimension start = wave.area().width() * (wave.area().height() - 1);
-    Dimension end = start + wave.area().width();
-    Uptr_text &wave_text = wave.get_raw_text();
-    Uptr_text &wave_color = wave.get_raw_color();
+    Dimension start = wave.area().w() * (wave.area().h() - 1);
+    Dimension end = start + wave.area().w();
+    Uptr_text &wave_text = wave.raw_text();
+    Uptr_text &wave_color = wave.raw_color();
     for (int i = start; i < end; ++i) {
         int r = 11 + rand() % (SZ_WAVE_COLORS - 11);
         wave_text[i] = WAVE_TEXT[r];
@@ -219,16 +219,16 @@ auto set_starting_wave(Image &wave, Uptr_color &wave_averages) -> void {
 }
 
 auto animate_wave(Image &wave, Uptr_color &wave_averages) -> void {
-    Uptr_text &wave_text = wave.get_raw_text();
-    Uptr_text &wave_color = wave.get_raw_color();
+    Uptr_text &wave_text = wave.raw_text();
+    Uptr_text &wave_color = wave.raw_color();
     Dimension sz_wave = wave.area().size();
-    Dimension wave_width = wave.area().width();
-    for (Dimension i = 0; i < sz_wave - wave_width; ++i) {
-        int down = i + wave_width;
+    Dimension wave_w = wave.area().w();
+    for (Dimension i = 0; i < sz_wave - wave_w; ++i) {
+        int down = i + wave_w;
         int j = (wave_averages[down % sz_wave] + 
                 wave_averages[(down  - 1) % sz_wave] + 
                 wave_averages[(down  + 1) % sz_wave] + 
-                wave_averages[(down  + wave_width) % sz_wave]) / 4.00625;
+                wave_averages[(down  + wave_w) % sz_wave]) / 4.00625;
         wave_averages[i] = j;
         wave_text[i] = WAVE_TEXT[j];
         wave_color[i] = WAVE_PALETTE[j];

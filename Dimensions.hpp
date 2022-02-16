@@ -17,12 +17,12 @@
  *	
  */
 
-#ifndef _DIMENSIONS_H_
-#define _DIMENSIONS_H_
+#ifndef _DIMENSIONS_HPP_
+#define _DIMENSIONS_HPP_
 
 #include <cstdint>
 
-namespace egv {
+namespace g80 {
 
     typedef uint16_t Dimension;
     
@@ -31,29 +31,59 @@ namespace egv {
     };
 
     struct Area { 
-        Area(Dimension width, Dimension height) : width_(width), height_(height) { set_size(); }
+        Area(Dimension w, Dimension h) : w_(w), h_(h) { 
+            set_size(); 
+        }
 
-        inline auto set(Dimension width, Dimension height) -> void { width_ = width; height_ = height; set_size(); }
-        inline auto width(Dimension width) -> void { width_ = width; set_size(); }
-        inline auto height(Dimension height) -> void { height_ = height; set_size(); }
+        inline auto set(Dimension w, Dimension h) -> void { 
+            w_ = w; 
+            h_ = h; 
+            set_size(); 
+        }
 
-        inline auto width() const -> const Dimension { return width_; }
-        inline auto height() const -> const Dimension { return height_; }
-        inline auto width_center() const -> const Dimension { return width_ / 2; };
-        inline auto height_center() const -> const Dimension { return height_ / 2; };
-        inline auto size() const -> const Dimension { return size_; }
+        inline auto w(Dimension w) -> void { 
+            w_ = w; 
+            set_size(); 
+        }
+
+        inline auto h(Dimension h) -> void { 
+            h_ = h; 
+            set_size(); 
+        }
+
+        inline auto w() const -> const Dimension { 
+            return w_; 
+        }
+
+        inline auto h() const -> const Dimension { 
+            return h_; 
+        }
+
+        inline auto w_mid() const -> const Dimension { 
+            return w_ / 2; 
+        };
+
+        inline auto h_mid() const -> const Dimension { 
+            return h_ / 2; 
+        };
+
+        inline auto size() const -> const Dimension { 
+            return size_; 
+        }
 
     private:
-        Dimension width_, height_; 
+        Dimension w_, h_; 
         Dimension size_;
 
-        inline auto set_size() -> void { size_ = width_ * height_; } 
+        inline auto set_size() -> void { 
+            size_ = w_ * h_; 
+        } 
     };
 
-    struct Rectangle {
-        Point point;
-        Area area;
+    struct Rectangle { 
+        Point point; 
+        Area area; 
     };
 }
-    
+
 #endif 
