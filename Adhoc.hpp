@@ -22,6 +22,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <array>
 
 namespace egv {
 
@@ -236,12 +237,18 @@ namespace egv {
 
     private:
         Dimensions dimensions_;
-        Uptr_color color_ {nullptr};
-        Uptr_text text_ {nullptr};
-        Uptr_mask mask_ {nullptr};
+        Uptr_color color_{nullptr};
+        Uptr_text text_{nullptr};
+        Uptr_mask mask_{nullptr};
     };
 
-
+    struct Droplet {
+        Point point{0, 0};
+        int animation_ix{0};
+        int ixn{1};
+        int stepper{0};
+        int stepper_max{3};
+    };
 }
 
 #endif 
