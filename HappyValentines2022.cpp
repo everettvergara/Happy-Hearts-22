@@ -127,17 +127,17 @@ auto set_droplet_animation_images(const Image &screen, DropletAnimation &droplet
     droplet_animation[0].get_raw_text()[1] = '.';
     droplet_animation[0].get_raw_text()[2] = '.';
     droplet_animation[0].get_raw_text()[3] = '.';
-    droplet_animation[0].get_raw_text()[4] = 'o';
+    droplet_animation[0].get_raw_text()[4] = 'v';
 
     droplet_animation[1].get_raw_text()[0] = ' ';
     droplet_animation[1].get_raw_text()[1] = '.';
     droplet_animation[1].get_raw_text()[2] = '.';
-    droplet_animation[1].get_raw_text()[3] = 'o';
+    droplet_animation[1].get_raw_text()[3] = 'v';
     droplet_animation[1].get_raw_text()[4] = ' ';
 
     droplet_animation[2].get_raw_text()[0] = ' ';
     droplet_animation[2].get_raw_text()[1] = '.';
-    droplet_animation[2].get_raw_text()[2] = 'o';
+    droplet_animation[2].get_raw_text()[2] = 'v';
     droplet_animation[2].get_raw_text()[3] = ' ';
     droplet_animation[2].get_raw_text()[4] = ' ';     
 
