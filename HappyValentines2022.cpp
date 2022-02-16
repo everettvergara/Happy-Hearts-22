@@ -139,7 +139,7 @@ auto set_droplet_animation_images(const Image &screen, DropletAnimation &droplet
     droplet_animation[2].get_raw_text()[1] = '.';
     droplet_animation[2].get_raw_text()[2] = 'o';
     droplet_animation[2].get_raw_text()[3] = ' ';
-    droplet_animation[2].get_raw_text()[4] = ' ';    
+    droplet_animation[2].get_raw_text()[4] = ' ';     
 
     for (auto &droplet_image : droplet_animation)
         for (int i = 0; i < 5; ++i)
